@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: code-nexus-server
+    env: node
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+    healthCheckPath: /health
+    autoDeploy: true
+
+  - type: web
+    name: code-nexus-client
+    env: node
+    buildCommand: cd client && npm install && npm run build
+    startCommand: cd client && npx serve -s dist -l 5173
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_BACKEND_URL
+        fromService:
+          name: code-nexus-server
+          type: web
+          property: url
+    autoDeploy: true 
