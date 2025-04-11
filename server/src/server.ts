@@ -16,8 +16,9 @@ app.use(express.json())
 // Configure CORS
 app.use(cors({
 	origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
-	methods: ["GET", "POST"],
-	credentials: true
+	methods: ["GET", "POST", "OPTIONS"],
+	credentials: true,
+	allowedHeaders: ["Content-Type", "Authorization"]
 }))
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
@@ -28,18 +29,24 @@ app.get('/health', (req: Request, res: Response) => {
 })
 
 const server = http.createServer(app)
+
+// Socket.IO configuration
 const io = new Server(server, {
 	cors: {
 		origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
-		methods: ["GET", "POST"],
-		credentials: true
+		methods: ["GET", "POST", "OPTIONS"],
+		credentials: true,
+		allowedHeaders: ["Content-Type", "Authorization"]
 	},
 	maxHttpBufferSize: 1e8,
 	pingTimeout: 60000,
+	pingInterval: 25000,
 	transports: ["websocket", "polling"],
 	allowEIO3: true,
 	path: "/socket.io/",
-	connectTimeout: 45000
+	connectTimeout: 45000,
+	allowUpgrades: true,
+	cookie: false
 })
 
 let userSocketMap: User[] = []
@@ -72,7 +79,8 @@ function getUserBySocketId(socketId: SocketId): User | null {
 }
 
 io.on("connection", (socket) => {
-	// Handle user actions
+	console.log("Client connected:", socket.id)
+
 	socket.on(SocketEvent.JOIN_REQUEST, ({ roomId, username }) => {
 		// Check is username exist in the room
 		const isUsernameExist = getUsersInRoom(roomId).filter(
@@ -273,6 +281,10 @@ io.on("connection", (socket) => {
 		socket.broadcast.to(roomId).emit(SocketEvent.DRAWING_UPDATE, {
 			snapshot,
 		})
+	})
+
+	socket.on("disconnect", () => {
+		console.log("Client disconnected:", socket.id)
 	})
 })
 

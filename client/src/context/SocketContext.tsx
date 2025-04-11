@@ -12,6 +12,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useState,
 } from "react"
 import { toast } from "react-hot-toast"
 import { Socket, io } from "socket.io-client"
@@ -27,7 +28,7 @@ export const useSocket = (): SocketContextType => {
     return context
 }
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
+const BACKEND_URL = "https://code-nexus-backend.onrender.com"
 
 const SocketProvider = ({ children }: { children: ReactNode }) => {
     const {
@@ -38,33 +39,57 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
         drawingData,
         setDrawingData,
     } = useAppContext()
+    const [isConnected, setIsConnected] = useState(false)
 
-    const backendUrl = BACKEND_URL.startsWith('http') ? BACKEND_URL : `https://${BACKEND_URL}`
-    console.log("Connecting to backend URL:", backendUrl)
+    console.log("Connecting to backend URL:", BACKEND_URL)
 
     const socket: Socket = useMemo(
         () =>
-            io(backendUrl, {
+            io(BACKEND_URL, {
                 reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                timeout: 20000,
                 transports: ["websocket", "polling"],
                 withCredentials: true,
-                extraHeaders: {
-                    "Access-Control-Allow-Origin": "*"
-                }
+                autoConnect: true,
+                forceNew: true,
+                path: "/socket.io/",
             }),
-        [backendUrl],
+        [],
     )
 
+    useEffect(() => {
+        const handleConnect = () => {
+            console.log("Socket connected successfully")
+            setIsConnected(true)
+            setStatus(USER_STATUS.CONNECTED)
+        }
+
+        const handleDisconnect = () => {
+            console.log("Socket disconnected")
+            setIsConnected(false)
+            setStatus(USER_STATUS.DISCONNECTED)
+        }
+
+        socket.on("connect", handleConnect)
+        socket.on("disconnect", handleDisconnect)
+
+        return () => {
+            socket.off("connect", handleConnect)
+            socket.off("disconnect", handleDisconnect)
+        }
+    }, [socket, setStatus])
+
     const handleError = useCallback(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err: any) => {
-            console.log("socket error", err)
-            console.log("Current backend URL:", backendUrl)
+            console.log("Socket error:", err)
+            console.log("Current backend URL:", BACKEND_URL)
             setStatus(USER_STATUS.CONNECTION_FAILED)
             toast.dismiss()
-            toast.error("Failed to connect to the server")
+            toast.error("Failed to connect to the server. Retrying...")
         },
-        [setStatus, backendUrl],
+        [setStatus],
     )
 
     const handleUsernameExist = useCallback(() => {
