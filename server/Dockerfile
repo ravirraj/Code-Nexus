@@ -12,20 +12,19 @@ RUN npm ci
 COPY . .
 
 RUN npm run build
-RUN npm prune --omit=dev
 
-# Stage 2: Copy only the `dist` folder
+# Stage 2: Production image
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Copy the `dist` folder from the builder stage
-COPY --from=builder /build/dist dist/
-COPY --from=builder /build/public public/
-COPY --from=builder /build/node_modules /node_modules
-COPY --from=builder /build/package*.json .
+# Copy the built files from the builder stage
+COPY --from=builder /build/dist ./dist
+COPY --from=builder /build/public ./public
+COPY --from=builder /build/node_modules ./node_modules
+COPY --from=builder /build/package*.json ./
 
-# Optional Expose a port
+# Expose the port
 EXPOSE 3000
 
 # Start the server

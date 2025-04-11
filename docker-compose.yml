@@ -10,9 +10,6 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-    volumes:
-      - ./server:/app
-      - /build/node_modules
     networks:
       - code-nexus
     ports:
@@ -34,9 +31,6 @@ services:
     environment:
       - NODE_ENV=production
       - VITE_BACKEND_URL=http://server:3000
-    volumes:
-      - ./client:/app
-      - /build/node_modules
     networks:
       - code-nexus
     ports:

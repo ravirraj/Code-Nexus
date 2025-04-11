@@ -4,7 +4,7 @@ FROM node:18-alpine AS builder
 WORKDIR /build
 
 # Copy package files and install dependencies
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm ci
 
@@ -12,17 +12,16 @@ RUN npm ci
 COPY . .
 
 RUN npm run build
-RUN npm prune --omit=dev
 
-# Stage 2: Serve the `dist` folder
+# Stage 2: Production image
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Copy the built frontend from the builder stage
-COPY --from=builder /build/dist dist/
-COPY --from=builder /build/package*.json .
+# Copy the built files from the builder stage
+COPY --from=builder /build/dist ./dist
 COPY --from=builder /build/node_modules ./node_modules
+COPY --from=builder /build/package*.json ./
 
 # Expose the port
 EXPOSE 5173
