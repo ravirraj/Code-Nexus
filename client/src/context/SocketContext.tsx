@@ -38,10 +38,18 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
         drawingData,
         setDrawingData,
     } = useAppContext()
+
+    console.log("Connecting to backend URL:", BACKEND_URL)
+
     const socket: Socket = useMemo(
         () =>
             io(BACKEND_URL, {
-                reconnectionAttempts: 2,
+                reconnectionAttempts: 5,
+                transports: ["websocket", "polling"],
+                withCredentials: true,
+                extraHeaders: {
+                    "Access-Control-Allow-Origin": "*"
+                }
             }),
         [],
     )
@@ -50,6 +58,7 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err: any) => {
             console.log("socket error", err)
+            console.log("Current backend URL:", BACKEND_URL)
             setStatus(USER_STATUS.CONNECTION_FAILED)
             toast.dismiss()
             toast.error("Failed to connect to the server")

@@ -13,7 +13,12 @@ const app = express()
 
 app.use(express.json())
 
-app.use(cors())
+// Configure CORS
+app.use(cors({
+	origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
+	methods: ["GET", "POST"],
+	credentials: true
+}))
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
 
@@ -25,10 +30,13 @@ app.get('/health', (req: Request, res: Response) => {
 const server = http.createServer(app)
 const io = new Server(server, {
 	cors: {
-		origin: "*",
+		origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
+		methods: ["GET", "POST"],
+		credentials: true
 	},
 	maxHttpBufferSize: 1e8,
 	pingTimeout: 60000,
+	transports: ["websocket", "polling"]
 })
 
 let userSocketMap: User[] = []
