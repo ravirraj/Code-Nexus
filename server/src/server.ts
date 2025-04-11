@@ -36,7 +36,10 @@ const io = new Server(server, {
 	},
 	maxHttpBufferSize: 1e8,
 	pingTimeout: 60000,
-	transports: ["websocket", "polling"]
+	transports: ["websocket", "polling"],
+	allowEIO3: true,
+	path: "/socket.io/",
+	connectTimeout: 45000
 })
 
 let userSocketMap: User[] = []
