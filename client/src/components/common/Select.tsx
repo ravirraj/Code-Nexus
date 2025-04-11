@@ -1,33 +1,39 @@
-import { ChangeEvent } from "react"
+import { ChangeEvent, ReactNode } from "react"
 import { PiCaretDownBold } from "react-icons/pi"
 
 interface SelectProps {
     onChange: (e: ChangeEvent<HTMLSelectElement>) => void
     value: string
-    options: string[]
-    title: string
+    options?: string[]
+    title?: string
+    children?: ReactNode
+    className?: string
+    id?: string
 }
 
-function Select({ onChange, value, options, title }: SelectProps) {
+function Select({ onChange, value, options, title, children, className, id }: SelectProps) {
     return (
         <div className="relative w-full">
-            <label className="mb-2">{title}</label>
+            {title && <label className="mb-2">{title}</label>}
             <select
-                className="w-full rounded-md border-none bg-darkHover px-4 py-2 text-white outline-none"
+                id={id}
+                className={className}
                 value={value}
                 onChange={onChange}
             >
-                {options.sort().map((option) => {
-                    const value = option
-                    const name =
-                        option.charAt(0).toUpperCase() + option.slice(1)
-
-                    return (
-                        <option key={name} value={value}>
-                            {name}
-                        </option>
-                    )
-                })}
+                {options ? (
+                    options.sort().map((option) => {
+                        const value = option
+                        const name = option.charAt(0).toUpperCase() + option.slice(1)
+                        return (
+                            <option key={name} value={value}>
+                                {name}
+                            </option>
+                        )
+                    })
+                ) : (
+                    children
+                )}
             </select>
             <PiCaretDownBold
                 size={16}

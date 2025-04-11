@@ -6,7 +6,7 @@ const ChatsView = () => {
     const { isMobile } = useWindowDimensions()
 
     // Set responsive input height
-    const inputHeight = isMobile ? 150 : 40; // Smaller height for mobile
+    const inputHeight = isMobile ? 100 : 40; // Smaller height for mobile
 
     return (
         <div

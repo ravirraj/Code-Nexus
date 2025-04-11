@@ -10,6 +10,11 @@ import { Code2, Pencil, X } from "lucide-react"
 import { Tooltip } from 'react-tooltip'
 import { useState, useEffect } from 'react'
 import cn from "classnames"
+import ChatsView from "@/components/sidebar/sidebar-views/ChatsView"
+import FilesView from "@/components/sidebar/sidebar-views/FilesView"
+import UsersView from "@/components/sidebar/sidebar-views/UsersView"
+import RunView from "@/components/sidebar/sidebar-views/RunView"
+import SettingsView from "@/components/sidebar/sidebar-views/SettingsView"
 
 function Sidebar() {
     const {
@@ -73,6 +78,23 @@ function Sidebar() {
         { id: VIEWS.SETTINGS, label: "Settings" }
     ]
 
+    const renderActiveView = () => {
+        switch (activeView) {
+            case VIEWS.CHAT:
+                return <ChatsView />
+            case VIEWS.FILES:
+                return <FilesView />
+            case VIEWS.USERS:
+                return <UsersView />
+            case VIEWS.RUN:
+                return <RunView />
+            case VIEWS.SETTINGS:
+                return <SettingsView />
+            default:
+                return <ChatsView />
+        }
+    }
+
     const getMobileSidebarStyle = () => {
         if (isMobile) {
             const baseStyle = {
@@ -119,7 +141,10 @@ function Sidebar() {
                 }}
             >
                 <div className="flex flex-col gap-1.5">
-                    <div className="flex w-full flex-col gap-1.5 px-2">
+                    <div className={cn(
+                        "flex w-full flex-col gap-1.5 px-2",
+                        { "md:flex-col": !isMobile, "flex-row justify-around": isMobile }
+                    )}>
                         {views.map((view) => (
                             <SidebarButton
                                 key={view.id}
@@ -132,10 +157,13 @@ function Sidebar() {
 
                     <div className="my-1.5 hidden h-px w-full bg-gradient-to-r from-transparent via-slate-700/50 to-transparent px-2 md:block" />
 
-                    <div className="mt-auto hidden w-full px-2 pb-3 md:block">
+                    <div className={cn(
+                        "w-full px-2",
+                        { "mt-auto hidden pb-3 md:block": !isMobile, "flex justify-center py-1": isMobile }
+                    )}>
                         <button
                             className={cn(
-                                "flex w-full items-center justify-center rounded-lg p-2.5 transition-all duration-200",
+                                "flex items-center justify-center rounded-lg p-2.5 transition-all duration-200",
                                 "hover:bg-indigo-500/10 hover:text-indigo-400",
                                 "border border-transparent hover:border-indigo-500/20"
                             )}
@@ -149,44 +177,11 @@ function Sidebar() {
                             }
                         >
                             {activityState === ACTIVITY_STATE.CODING ? (
-                                <Pencil className="h-5 w-5" />
+                                <Pencil className={cn("h-5 w-5", { "h-4 w-4": isMobile })} />
                             ) : (
-                                <Code2 className="h-5 w-5" />
+                                <Code2 className={cn("h-5 w-5", { "h-4 w-4": isMobile })} />
                             )}
                         </button>
-                    </div>
-
-                    <div className="flex w-full flex-wrap justify-around gap-1 px-2 py-1 md:hidden">
-                        {views.map((view) => (
-                            <SidebarButton
-                                key={view.id}
-                                viewName={view.id}
-                                icon={viewIcons[view.id]}
-                                onClick={() => handleViewChange(view.id)}
-                            />
-                        ))}
-                        <div className="relative">
-                            <button
-                                className={cn(
-                                    "flex items-center justify-center rounded-lg p-2 transition-all duration-200",
-                                    "hover:bg-indigo-500/10 hover:text-indigo-400",
-                                    "border border-transparent hover:border-indigo-500/20"
-                                )}
-                                onClick={changeState}
-                                data-tooltip-id="activity-state-tooltip"
-                                data-tooltip-content={
-                                    activityState === ACTIVITY_STATE.CODING
-                                        ? "Switch to Drawing Mode"
-                                        : "Switch to Coding Mode"
-                                }
-                            >
-                                {activityState === ACTIVITY_STATE.CODING ? (
-                                    <Pencil className="h-4 w-4 sm:h-5 sm:w-5" />
-                                ) : (
-                                    <Code2 className="h-4 w-4 sm:h-5 sm:w-5" />
-                                )}
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -210,6 +205,7 @@ function Sidebar() {
                         <X className="h-5 w-5" />
                     </button>
                 </div>
+                {renderActiveView()}
             </div>
 
             {showTooltip && (

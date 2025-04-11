@@ -189,9 +189,9 @@ export default function FilesView() {
     }
 
     const renderFileItem = (file: FileSystemItem) => (
-        <div key={file.id} className="flex items-center gap-2 px-4 py-1 hover:bg-gray-100">
-            <LuFile className="h-4 w-4 text-gray-500" />
-            <span className="flex-1 text-sm">{file.name}</span>
+        <div key={file.id} className="flex items-center gap-2 px-4 py-1 hover:bg-slate-800/50">
+            <LuFile className="h-4 w-4 text-slate-400" />
+            <span className="flex-1 text-sm text-slate-300">{file.name}</span>
         </div>
     )
 
@@ -200,18 +200,18 @@ export default function FilesView() {
             <div
                 className={twMerge(
                     clsx(
-                        "flex cursor-pointer items-center gap-2 px-4 py-1 hover:bg-gray-100",
-                        expandedFolders.has(folder.id) && "bg-gray-50"
+                        "flex cursor-pointer items-center gap-2 px-4 py-1 hover:bg-slate-800/50",
+                        expandedFolders.has(folder.id) && "bg-slate-800/30"
                     )
                 )}
                 onClick={() => toggleFolder(folder.id)}
             >
                 {expandedFolders.has(folder.id) ? (
-                    <LuFolderOpen className="h-4 w-4 text-gray-500" />
+                    <LuFolderOpen className="h-4 w-4 text-slate-400" />
                 ) : (
-                    <LuFolder className="h-4 w-4 text-gray-500" />
+                    <LuFolder className="h-4 w-4 text-slate-400" />
                 )}
-                <span className="flex-1 text-sm">{folder.name}</span>
+                <span className="flex-1 text-sm text-slate-300">{folder.name}</span>
             </div>
             {expandedFolders.has(folder.id) && folder.children && (
                 <div className="ml-4">
@@ -227,15 +227,21 @@ export default function FilesView() {
 
     return (
         <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b border-gray-200 p-4">
-                <h2 className="text-lg font-semibold">Files</h2>
+            <div className="flex items-center justify-between border-b border-slate-700/50 p-4">
+                <h2 className="text-lg font-semibold text-white">Files</h2>
             </div>
             <div className="flex-1 overflow-y-auto p-2">
-                {Array.isArray(fileStructure) && fileStructure.map(renderFolderItem)}
+                {Array.isArray(fileStructure) && fileStructure.length > 0 ? (
+                    fileStructure.map(renderFolderItem)
+                ) : (
+                    <div className="flex h-full items-center justify-center p-4 text-center">
+                        <p className="text-sm text-slate-400">No files loaded yet. Open a folder to get started.</p>
+                    </div>
+                )}
             </div>
-            <div className="flex flex-col gap-2 border-t border-gray-200 p-4">
+            <div className="flex flex-col gap-2 border-t border-slate-700/50 p-4">
                 <button
-                    className="flex w-full items-center justify-start rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                    className="flex w-full items-center justify-start rounded-md p-2 text-slate-300 hover:bg-slate-800/50"
                     onClick={handleOpenDirectory}
                     disabled={isLoading}
                 >
@@ -243,7 +249,7 @@ export default function FilesView() {
                     {isLoading ? "Loading..." : "Open File/Folder"}
                 </button>
                 <button
-                    className="flex w-full items-center justify-start rounded-md p-2 text-gray-700 hover:bg-gray-100"
+                    className="flex w-full items-center justify-start rounded-md p-2 text-slate-300 hover:bg-slate-800/50"
                     onClick={downloadFilesAndFolders}
                 >
                     <BiArchiveIn className="mr-2 h-5 w-5" />

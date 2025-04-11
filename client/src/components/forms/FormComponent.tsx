@@ -2,7 +2,7 @@ import { useAppContext } from "@/context/AppContext"
 import { useSocket } from "@/context/SocketContext"
 import { SocketEvent } from "@/types/socket"
 import { USER_STATUS } from "@/types/user"
-import { ChangeEvent, FormEvent, useEffect, useRef } from "react"
+import { ChangeEvent, useEffect, useRef } from "react"
 import { toast } from "react-hot-toast"
 import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
@@ -28,31 +28,56 @@ const FormComponent = () => {
         setCurrentUser({ ...currentUser, [name]: value })
     }
 
-    const validateForm = () => {
-        if (currentUser.username.trim().length === 0) {
-            toast.error("Enter your username")
-            return false
-        } else if (currentUser.roomId.trim().length === 0) {
-            toast.error("Enter a room id")
-            return false
-        } else if (currentUser.roomId.trim().length < 5) {
-            toast.error("ROOM Id must be at least 5 characters long")
-            return false
-        } else if (currentUser.username.trim().length < 3) {
-            toast.error("Username must be at least 3 characters long")
-            return false
-        }
-        return true
-    }
-
-    const joinRoom = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        
+        // Strict validation for username
+        if (!currentUser.username || currentUser.username.trim().length < 3) {
+            toast.error("Please enter a valid username (min 3 characters)")
+            usernameRef.current?.focus()
+            return
+        }
+
+        // Strict validation for roomId
+        if (!currentUser.roomId || currentUser.roomId.trim().length < 5) {
+            toast.error("Please enter or generate a valid room ID (min 5 characters)")
+            return
+        }
+
         if (status === USER_STATUS.ATTEMPTING_JOIN) return
-        if (!validateForm()) return
+
+        // Store username in session storage before joining
+        sessionStorage.setItem("username", currentUser.username)
+        
         toast.loading("Joining room...")
         setStatus(USER_STATUS.ATTEMPTING_JOIN)
         socket.emit(SocketEvent.JOIN_REQUEST, currentUser)
     }
+
+    useEffect(() => {
+        if (status === USER_STATUS.DISCONNECTED && !socket.connected) {
+            socket.connect()
+            return
+        }
+
+        const isRedirect = sessionStorage.getItem("redirect")
+        const storedUsername = sessionStorage.getItem("username")
+
+        if (status === USER_STATUS.JOINED && !isRedirect && storedUsername) {
+            sessionStorage.setItem("redirect", "true")
+            navigate(`/editor/${currentUser.roomId}`, {
+                state: {
+                    username: storedUsername
+                },
+            })
+        } else if (status === USER_STATUS.JOINED && isRedirect) {
+            sessionStorage.removeItem("redirect")
+            sessionStorage.removeItem("username")
+            setStatus(USER_STATUS.DISCONNECTED)
+            socket.disconnect()
+            socket.connect()
+        }
+    }, [currentUser, location.state?.redirect, navigate, setStatus, socket, status])
 
     useEffect(() => {
         if (currentUser.roomId.length > 0) return
@@ -63,30 +88,6 @@ const FormComponent = () => {
             }
         }
     }, [currentUser, location.state?.roomId, setCurrentUser])
-
-    useEffect(() => {
-        if (status === USER_STATUS.DISCONNECTED && !socket.connected) {
-            socket.connect()
-            return
-        }
-
-        const isRedirect = sessionStorage.getItem("redirect") || false
-
-        if (status === USER_STATUS.JOINED && !isRedirect) {
-            const username = currentUser.username
-            sessionStorage.setItem("redirect", "true")
-            navigate(`/editor/${currentUser.roomId}`, {
-                state: {
-                    username,
-                },
-            })
-        } else if (status === USER_STATUS.JOINED && isRedirect) {
-            sessionStorage.removeItem("redirect")
-            setStatus(USER_STATUS.DISCONNECTED)
-            socket.disconnect()
-            socket.connect()
-        }
-    }, [currentUser, location.state?.redirect, navigate, setStatus, socket, status])
 
     return (
         <div className="w-full max-w-md rounded-xl sm:rounded-2xl border border-slate-700 bg-slate-800/50 p-4 sm:p-6 md:p-8 shadow-xl backdrop-blur-sm">
@@ -100,7 +101,7 @@ const FormComponent = () => {
                 </p>
             </div>
 
-            <form onSubmit={joinRoom} className="space-y-4 sm:space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="space-y-1 sm:space-y-2">
                     <div className="flex items-center justify-between">
                         <label className="text-xs sm:text-sm font-medium text-slate-300">Room ID</label>
