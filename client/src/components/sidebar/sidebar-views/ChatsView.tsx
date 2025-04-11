@@ -1,10 +1,8 @@
+import useWindowDimensions from "@/hooks/useWindowDimensions"
 import ChatInput from "@/components/chats/ChatInput"
 import ChatList from "@/components/chats/ChatList"
-import useResponsive from "@/hooks/useResponsive"
-import useWindowDimensions from "@/hooks/useWindowDimensions"
 
 const ChatsView = () => {
-    const { viewHeight } = useResponsive()
     const { isMobile } = useWindowDimensions()
 
     // Set responsive input height

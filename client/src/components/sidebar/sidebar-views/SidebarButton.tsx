@@ -1,20 +1,18 @@
 import { useChatRoom } from "@/context/ChatContext"
 import { useViews } from "@/context/ViewContext"
 import { VIEWS } from "@/types/view"
-import { useState } from "react"
 import { buttonStyles } from "../tooltipStyles"
 import { ElementType } from "react"
 
-interface ViewButtonProps {
+interface SidebarButtonProps {
     viewName: VIEWS
-    icon: JSX.Element
+    icon: ElementType
     onClick?: () => void
     className?: string
 }
 
-const ViewButton = ({ viewName, icon, onClick, className }: ViewButtonProps) => {
-    const { activeView, setActiveView, isSidebarOpen, setIsSidebarOpen } =
-        useViews()
+const SidebarButton = ({ viewName, icon: Icon, onClick, className }: SidebarButtonProps) => {
+    const { activeView, setActiveView, isSidebarOpen, setIsSidebarOpen } = useViews()
     const { isNewMessage } = useChatRoom()
 
     const handleViewClick = () => {
@@ -31,8 +29,6 @@ const ViewButton = ({ viewName, icon, onClick, className }: ViewButtonProps) => 
         }
     }
 
-    const Icon = icon as ElementType
-
     return (
         <div className="relative flex flex-col items-center">
             <button
@@ -42,9 +38,8 @@ const ViewButton = ({ viewName, icon, onClick, className }: ViewButtonProps) => 
                 data-view={viewName}
                 aria-label={`View ${viewName}`}
             >
-                <div className="flex items-center justify-center">{typeof icon === "function" ? <Icon /> : icon}</div>
-                {/* Show dot for new message in chat View Button */}
-                {viewName === VIEWS.CHATS && isNewMessage && (
+                <div className="flex items-center justify-center"><Icon /></div>
+                {viewName === VIEWS.CHAT && isNewMessage && (
                     <div className="absolute right-0 top-0 h-3 w-3 rounded-full bg-primary"></div>
                 )}
             </button>
@@ -52,4 +47,4 @@ const ViewButton = ({ viewName, icon, onClick, className }: ViewButtonProps) => 
     )
 }
 
-export default ViewButton
+export default SidebarButton

@@ -1,9 +1,9 @@
 enum VIEWS {
+    CHAT = "CHAT",
     FILES = "FILES",
-    CHATS = "CHATS",
-    CLIENTS = "CLIENTS",
+    USERS = "USERS",
     RUN = "RUN",
-    SETTINGS = "SETTINGS",
+    SETTINGS = "SETTINGS"
 }
 
 interface ViewContext {
@@ -11,8 +11,7 @@ interface ViewContext {
     setActiveView: (activeView: VIEWS) => void
     isSidebarOpen: boolean
     setIsSidebarOpen: (isSidebarOpen: boolean) => void
-    viewComponents: { [key in VIEWS]: JSX.Element }
-    viewIcons: { [key in VIEWS]: JSX.Element }
+    viewIcons: Record<VIEWS, any>
 }
 
 export { ViewContext, VIEWS }

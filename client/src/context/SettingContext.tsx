@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { Settings, SettingContextType } from "@/types/setting"
+import { ReactNode } from "react"
 
 const defaultSettings: Settings = {
     theme: "dark",
@@ -10,7 +11,15 @@ const defaultSettings: Settings = {
 
 const SettingContext = createContext<SettingContextType | null>(null)
 
-export function SettingProvider({ children }: { children: React.ReactNode }) {
+export const useSettings = (): SettingContextType => {
+    const context = useContext(SettingContext)
+    if (!context) {
+        throw new Error("useSettings must be used within a SettingProvider")
+    }
+    return context
+}
+
+export function SettingProvider({ children }: { children: ReactNode }) {
     const storedSettings = JSON.parse(
         localStorage.getItem("settings") || "{}"
     ) as Settings
@@ -39,12 +48,14 @@ export function SettingProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguage] = useState<string>(storedLanguage)
     const [fontSize, setFontSize] = useState<number>(storedFontSize)
     const [fontFamily, setFontFamily] = useState<string>(storedFontFamily)
+    const [tabSize, setTabSize] = useState(4)
 
     const resetSettings = () => {
         setTheme(defaultSettings.theme)
         setLanguage(defaultSettings.language)
         setFontSize(defaultSettings.fontSize)
         setFontFamily(defaultSettings.fontFamily)
+        setTabSize(4)
     }
 
     useEffect(() => {
@@ -68,17 +79,12 @@ export function SettingProvider({ children }: { children: React.ReactNode }) {
                 setFontSize,
                 fontFamily,
                 setFontFamily,
+                tabSize,
+                setTabSize,
+                resetSettings
             }}
         >
             {children}
         </SettingContext.Provider>
     )
-}
-
-export function useSettings() {
-    const context = useContext(SettingContext)
-    if (!context) {
-        throw new Error("useSettings must be used within a SettingProvider")
-    }
-    return context
 }

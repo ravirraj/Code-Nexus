@@ -1,86 +1,28 @@
-import Users from "@/components/common/Users"
 import { useAppContext } from "@/context/AppContext"
-import { useSocket } from "@/context/SocketContext"
-import useResponsive from "@/hooks/useResponsive"
-import { USER_STATUS } from "@/types/user"
-import toast from "react-hot-toast"
-import { GoSignOut } from "react-icons/go"
-import { IoShareOutline } from "react-icons/io5"
-import { LuCopy } from "react-icons/lu"
-import { useNavigate } from "react-router-dom"
+import { RemoteUser } from "@/types/user"
 
-function UsersView() {
-    const navigate = useNavigate()
-    const { viewHeight } = useResponsive()
-    const { setStatus } = useAppContext()
-    const { socket } = useSocket()
-
-    const copyURL = async () => {
-        const url = window.location.href
-        try {
-            await navigator.clipboard.writeText(url)
-            toast.success("URL copied to clipboard")
-        } catch (error) {
-            toast.error("Unable to copy URL to clipboard")
-            console.log(error)
-        }
-    }
-
-    const shareURL = async () => {
-        const url = window.location.href
-        try {
-            await navigator.share({ url })
-        } catch (error) {
-            toast.error("Unable to share URL")
-            console.log(error)
-        }
-    }
-
-    const leaveRoom = () => {
-        socket.disconnect()
-        setStatus(USER_STATUS.DISCONNECTED)
-        navigate("/", {
-            replace: true,
-        })
-    }
+export default function UsersView() {
+    const { users, currentUser } = useAppContext()
 
     return (
-        <div className="flex h-full flex-col p-4">
-            <h1 className="view-title">Users</h1>
-            {/* List of connected users */}
-            <div className="flex-grow overflow-y-auto">
-                <Users />
+        <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b border-gray-200 p-4">
+                <h2 className="text-lg font-semibold">Users</h2>
             </div>
-            <div className="flex flex-col items-center gap-4 border-t border-slate-700 pt-4">
-                <div className="flex w-full gap-4">
-                    {/* Share URL button */}
-                    <button
-                        className="flex flex-grow items-center justify-center rounded-md bg-white p-3 text-black"
-                        onClick={shareURL}
-                        title="Share Link"
+            <div className="flex-1 overflow-y-auto p-2">
+                {users.map((user: RemoteUser) => (
+                    <div
+                        key={user.socketId}
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
                     >
-                        <IoShareOutline size={26} />
-                    </button>
-                    {/* Copy URL button */}
-                    <button
-                        className="flex flex-grow items-center justify-center rounded-md bg-white p-3 text-black"
-                        onClick={copyURL}
-                        title="Copy Link"
-                    >
-                        <LuCopy size={22} />
-                    </button>
-                    {/* Leave room button */}
-                    <button
-                        className="flex flex-grow items-center justify-center rounded-md bg-primary p-3 text-black"
-                        onClick={leaveRoom}
-                        title="Leave room"
-                    >
-                        <GoSignOut size={22} />
-                    </button>
-                </div>
+                        <div className="h-2 w-2 rounded-full bg-green-500" />
+                        <span className="text-sm">{user.username}</span>
+                        {user.username === currentUser?.username && (
+                            <span className="text-xs text-gray-500">(You)</span>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     )
 }
-
-export default UsersView

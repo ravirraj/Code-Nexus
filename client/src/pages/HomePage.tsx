@@ -1,5 +1,5 @@
 import FormComponent from "@/components/forms/FormComponent"
-import { Code2, Users, Zap, Share2, Sparkles, Terminal, GitBranch, Cpu, Network, ArrowRight } from "lucide-react"
+import { Code2, Users, Zap, Share2, Sparkles, ArrowRight } from "lucide-react"
 // import Footer from "@/components/common/Footer";
 
 function HomePage() {

@@ -1,17 +1,16 @@
-import SplitterComponent from "@/components/SplitterComponent"
-import ConnectionStatusPage from "@/components/connection/ConnectionStatusPage"
-import Sidebar from "@/components/sidebar/Sidebar"
-import WorkSpace from "@/components/workspace"
 import { useAppContext } from "@/context/AppContext"
 import { useSocket } from "@/context/SocketContext"
 import { useViews } from "@/context/ViewContext"
-import useFullScreen from "@/hooks/useFullScreen"
-import useUserActivity from "@/hooks/useUserActivity"
-import { SocketEvent } from "@/types/socket"
 import { USER_STATUS, User } from "@/types/user"
+import { SocketEvent } from "@/types/socket"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
-import { Code2, Users, Zap, Share2, Menu, X } from "lucide-react"
+import { Code2, Users, Zap, Menu, X } from "lucide-react"
+import ConnectionStatusPage from "@/components/connection/ConnectionStatusPage"
+import Sidebar from "@/components/sidebar/Sidebar"
+import WorkSpace from "@/components/workspace"
+import useFullScreen from "@/hooks/useFullScreen"
+import useUserActivity from "@/hooks/useUserActivity"
 import cn from "classnames"
 
 function EditorPage() {
@@ -24,7 +23,7 @@ function EditorPage() {
     const { status, setCurrentUser, currentUser } = useAppContext()
     const { socket } = useSocket()
     const location = useLocation()
-    const { isSidebarOpen, setIsSidebarOpen } = useViews()
+    const { isSidebarOpen } = useViews()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     useEffect(() => {

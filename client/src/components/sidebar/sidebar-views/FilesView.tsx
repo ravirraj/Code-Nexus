@@ -1,19 +1,22 @@
-import  { useState } from "react"
-import FileStructureView from "@/components/files/FileStructureView"
 import { useFileSystem } from "@/context/FileContext"
-import useResponsive from "@/hooks/useResponsive"
 import { FileSystemItem } from "@/types/file"
-import cn from "classnames"
 import { BiArchiveIn } from "react-icons/bi"
 import { TbFileUpload } from "react-icons/tb"
 import { v4 as uuidV4 } from "uuid"
-import { toast } from "react-hot-toast"
+import toast from "react-hot-toast"
+import { useState } from "react"
+import { LuFile, LuFolder, LuFolderOpen } from "react-icons/lu"
+import { clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
-function FilesView() {
-    const { downloadFilesAndFolders, updateDirectory } = useFileSystem()
-    const { viewHeight } = useResponsive()
-    const { minHeightReached } = useResponsive()
+export default function FilesView() {
+    const { 
+        downloadFilesAndFolders, 
+        updateDirectory,
+        fileStructure
+    } = useFileSystem()
     const [isLoading, setIsLoading] = useState(false)
+    const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
 
     const handleOpenDirectory = async () => {
         try {
@@ -173,36 +176,80 @@ function FilesView() {
         }
     }
 
-    return (
-        <div
-            className="flex h-full select-none flex-col gap-1 px-4 py-2"
-        >
-            <div className="flex-grow overflow-y-auto">
-                <FileStructureView />
-            </div>
+    const toggleFolder = (folderId: string) => {
+        setExpandedFolders((prev) => {
+            const newSet = new Set(prev)
+            if (newSet.has(folderId)) {
+                newSet.delete(folderId)
+            } else {
+                newSet.add(folderId)
+            }
+            return newSet
+        })
+    }
+
+    const renderFileItem = (file: FileSystemItem) => (
+        <div key={file.id} className="flex items-center gap-2 px-4 py-1 hover:bg-gray-100">
+            <LuFile className="h-4 w-4 text-gray-500" />
+            <span className="flex-1 text-sm">{file.name}</span>
+        </div>
+    )
+
+    const renderFolderItem = (folder: FileSystemItem) => (
+        <div key={folder.id}>
             <div
-                className={cn(`flex min-h-fit flex-col justify-end border-t border-slate-700 pt-2`, {
-                    hidden: minHeightReached,
-                })}
+                className={twMerge(
+                    clsx(
+                        "flex cursor-pointer items-center gap-2 px-4 py-1 hover:bg-gray-100",
+                        expandedFolders.has(folder.id) && "bg-gray-50"
+                    )
+                )}
+                onClick={() => toggleFolder(folder.id)}
             >
-                <hr />
+                {expandedFolders.has(folder.id) ? (
+                    <LuFolderOpen className="h-4 w-4 text-gray-500" />
+                ) : (
+                    <LuFolder className="h-4 w-4 text-gray-500" />
+                )}
+                <span className="flex-1 text-sm">{folder.name}</span>
+            </div>
+            {expandedFolders.has(folder.id) && folder.children && (
+                <div className="ml-4">
+                    {folder.children.map((child) => 
+                        child.type === "directory" 
+                            ? renderFolderItem(child)
+                            : renderFileItem(child)
+                    )}
+                </div>
+            )}
+        </div>
+    )
+
+    return (
+        <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b border-gray-200 p-4">
+                <h2 className="text-lg font-semibold">Files</h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+                {Array.isArray(fileStructure) && fileStructure.map(renderFolderItem)}
+            </div>
+            <div className="flex flex-col gap-2 border-t border-gray-200 p-4">
                 <button
-                    className="mt-2 flex w-full justify-start rounded-md p-2 transition-all hover:bg-darkHover"
+                    className="flex w-full items-center justify-start rounded-md p-2 text-gray-700 hover:bg-gray-100"
                     onClick={handleOpenDirectory}
                     disabled={isLoading}
                 >
-                    <TbFileUpload className="mr-2" size={24} />
+                    <TbFileUpload className="mr-2 h-5 w-5" />
                     {isLoading ? "Loading..." : "Open File/Folder"}
                 </button>
                 <button
-                    className="flex w-full justify-start rounded-md p-2 transition-all hover:bg-darkHover"
+                    className="flex w-full items-center justify-start rounded-md p-2 text-gray-700 hover:bg-gray-100"
                     onClick={downloadFilesAndFolders}
                 >
-                    <BiArchiveIn className="mr-2" size={22} /> Download Code
+                    <BiArchiveIn className="mr-2 h-5 w-5" />
+                    Download Code
                 </button>
             </div>
         </div>
     )
 }
-
-export default FilesView

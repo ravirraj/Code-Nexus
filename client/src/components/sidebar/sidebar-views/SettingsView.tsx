@@ -1,13 +1,11 @@
-import Select from "@/components/common/Select"
 import { useSettings } from "@/context/SettingContext"
-import useResponsive from "@/hooks/useResponsive"
+import Select from "@/components/common/Select"
 import { editorFonts } from "@/resources/Fonts"
 import { editorThemes } from "@/resources/Themes"
 import { langNames } from "@uiw/codemirror-extensions-langs"
-import { ChangeEvent, useEffect } from "react"
 
-function SettingsView() {
-    const {
+export default function SettingsView() {
+    const { 
         theme,
         setTheme,
         language,
@@ -16,83 +14,92 @@ function SettingsView() {
         setFontSize,
         fontFamily,
         setFontFamily,
-        resetSettings,
+        tabSize,
+        setTabSize
     } = useSettings()
 
-    const handleFontFamilyChange = (e: ChangeEvent<HTMLSelectElement>) =>
-        setFontFamily(e.target.value)
-    const handleThemeChange = (e: ChangeEvent<HTMLSelectElement>) =>
-        setTheme(e.target.value)
-    const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) =>
-        setLanguage(e.target.value)
-    const handleFontSizeChange = (e: ChangeEvent<HTMLSelectElement>) =>
-        setFontSize(parseInt(e.target.value))
-
-    useEffect(() => {
-        // Set editor font family
-        const editor = document.querySelector(
-            ".cm-editor > .cm-scroller",
-        ) as HTMLElement
-        if (editor !== null) {
-            editor.style.fontFamily = `${fontFamily}, monospace`
-        }
-    }, [fontFamily])
+    const resetSettings = () => {
+        setTheme("system")
+        setLanguage("javascript")
+        setFontSize(12)
+        setFontFamily("monospace")
+        setTabSize(4)
+    }
 
     return (
-        <div className="flex h-full flex-col items-center gap-2 p-4">
-            <h1 className="view-title mb-2">Settings</h1>
-            {/* Scrollable Settings Area */}
-            <div className="w-full flex-grow space-y-4 overflow-y-auto pr-2">
-                {/* Choose Font Family option */}
-                <div className="flex w-full items-end gap-2">
-                    <Select
-                        onChange={handleFontFamilyChange}
-                        value={fontFamily}
-                        options={editorFonts}
-                        title="Font Family"
-                    />
-                    {/* Choose font size option */}
-                    <select
-                        value={fontSize}
-                        onChange={handleFontSizeChange}
-                        className="rounded-md border-none bg-darkHover px-4 py-2 text-white outline-none"
-                        title="Font Size"
-                    >
-                        {[...Array(13).keys()].map((size) => {
-                            return (
-                                <option key={size} value={size + 12}>
-                                    {size + 12}
-                                </option>
-                            )
-                        })}
-                    </select>
-                </div>
-                {/* Choose theme option */}
-                <Select
-                    onChange={handleThemeChange}
-                    value={theme}
-                    options={Object.keys(editorThemes)}
-                    title="Theme"
-                />
-                {/* Choose language option */}
-                <Select
-                    onChange={handleLanguageChange}
-                    value={language}
-                    options={langNames}
-                    title="Language"
-                />
+        <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b border-gray-200 p-4">
+                <h2 className="text-lg font-semibold">Settings</h2>
             </div>
-            {/* Reset Button Area */}
-            <div className="mt-2 w-full border-t border-slate-700 pt-4">
-                <button
-                    className="w-full rounded-md border-none bg-darkHover px-4 py-2 text-white outline-none transition-colors hover:bg-red-800/50"
-                    onClick={resetSettings}
-                >
-                    Reset to default
-                </button>
+            <div className="flex-1 overflow-y-auto p-4">
+                <div className="space-y-4">
+                    <div>
+                        <label htmlFor="font-family" className="block text-sm font-medium text-gray-700">
+                            Font Family
+                        </label>
+                        <Select
+                            title="Font Family"
+                            value={fontFamily}
+                            onChange={(e) => setFontFamily(e.target.value)}
+                            options={editorFonts}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="font-size" className="block text-sm font-medium text-gray-700">
+                            Font Size
+                        </label>
+                        <input
+                            type="range"
+                            id="font-size"
+                            min="8"
+                            max="24"
+                            value={fontSize}
+                            onChange={(e) => setFontSize(parseInt(e.target.value))}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="theme" className="block text-sm font-medium text-gray-700">
+                            Theme
+                        </label>
+                        <Select
+                            title="Theme"
+                            value={theme}
+                            onChange={(e) => setTheme(e.target.value)}
+                            options={Object.keys(editorThemes)}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="language" className="block text-sm font-medium text-gray-700">
+                            Language
+                        </label>
+                        <Select
+                            title="Language"
+                            value={language}
+                            onChange={(e) => setLanguage(e.target.value)}
+                            options={langNames}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="tab-size" className="block text-sm font-medium text-gray-700">
+                            Tab Size
+                        </label>
+                        <input
+                            type="number"
+                            id="tab-size"
+                            min="2"
+                            max="8"
+                            value={tabSize}
+                            onChange={(e) => setTabSize(parseInt(e.target.value))}
+                        />
+                    </div>
+                    <button
+                        className="mt-4 rounded-md bg-primary p-2 text-black"
+                        onClick={resetSettings}
+                    >
+                        Reset Settings
+                    </button>
+                </div>
             </div>
         </div>
     )
 }
-
-export default SettingsView

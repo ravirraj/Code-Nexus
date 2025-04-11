@@ -3,28 +3,25 @@ import { AppContextProvider } from "./AppContext.js"
 import { ChatContextProvider } from "./ChatContext.jsx"
 import { FileContextProvider } from "./FileContext.jsx"
 import { RunCodeContextProvider } from "./RunCodeContext.jsx"
-import { SettingContextProvider } from "./SettingContext.jsx"
-import { SocketProvider } from "./SocketContext.jsx"
-import { ViewContextProvider } from "./ViewContext.js"
-import { CopilotContextProvider } from "./CopilotContext.js"
+import { SettingProvider } from "./SettingContext"
+import { SocketProvider } from "./SocketContext"
+import { ViewProvider } from "./ViewContext"
 
 function AppProvider({ children }: { children: ReactNode }) {
     return (
         <AppContextProvider>
             <SocketProvider>
-                <SettingContextProvider>
-                    <ViewContextProvider>
+                <SettingProvider>
+                    <ViewProvider>
                         <FileContextProvider>
-                            <CopilotContextProvider>
-                                <RunCodeContextProvider>
-                                    <ChatContextProvider>
-                                        {children}
-                                    </ChatContextProvider>
-                                </RunCodeContextProvider>
-                            </CopilotContextProvider>
+                            <RunCodeContextProvider>
+                                <ChatContextProvider>
+                                    {children}
+                                </ChatContextProvider>
+                            </RunCodeContextProvider>
                         </FileContextProvider>
-                    </ViewContextProvider>
-                </SettingContextProvider>
+                    </ViewProvider>
+                </SettingProvider>
             </SocketProvider>
         </AppContextProvider>
     )

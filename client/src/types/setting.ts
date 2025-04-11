@@ -11,7 +11,10 @@ export interface SettingContextType {
     language: string
     setLanguage: (language: string) => void
     fontSize: number
-    setFontSize: (fontSize: number) => void
+    setFontSize: (size: number) => void
     fontFamily: string
     setFontFamily: (fontFamily: string) => void
+    tabSize: number
+    setTabSize: (size: number) => void
+    resetSettings: () => void
 }
