@@ -1,0 +1,22 @@
+{
+  "builds": [
+    {
+      "src": "server/Dockerfile",
+      "use": "@railway/static"
+    },
+    {
+      "src": "client/Dockerfile",
+      "use": "@railway/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "client"
+    }
+  ]
+} 
