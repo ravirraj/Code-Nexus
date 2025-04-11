@@ -1,0 +1,675 @@
+@import url("tldraw/tldraw.css");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --secondary-color: #4f46e5;
+  --background-color: #0f172a;
+  --surface-color: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-color: #818cf8;
+  --error-color: #ef4444;
+  --success-color: #22c55e;
+  --border-color: #334155;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-900 text-slate-50;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .view-title {
+    @apply mb-4 w-full border-b border-slate-700 pb-3 text-start text-xl font-semibold text-slate-100;
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-lg bg-slate-700 px-4 py-2 text-sm font-medium text-slate-100 transition-all hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-slate-100 placeholder-slate-400 transition-all focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply rounded-xl border border-slate-700 bg-slate-800/50 p-6 shadow-xl backdrop-blur-sm transition-all hover:border-indigo-500/50 hover:bg-slate-800;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 transition-all hover:bg-slate-800 hover:text-white;
+  }
+
+  .nav-link-active {
+    @apply bg-slate-800 text-white;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-800;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-600;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}
+
+/* Editor Styles */
+.cm-editor {
+  @apply max-h-[93vh] rounded-lg border border-slate-700 bg-slate-800 shadow-lg;
+}
+
+.cm-editor .cm-scroller {
+  font-family: 'JetBrains Mono', monospace;
+  @apply text-slate-100;
+}
+
+.cm-editor .cm-content {
+  @apply p-4;
+}
+
+.cm-editor .cm-line {
+  @apply px-4;
+}
+
+.cm-editor .cm-activeLine {
+  @apply bg-slate-700/50;
+}
+
+/* Responsive editor styles */
+.responsive-editor .cm-gutter {
+  @apply px-1;
+}
+
+.responsive-editor .cm-gutterElement {
+  @apply text-xs sm:text-sm;
+}
+
+.responsive-editor .cm-content {
+  @apply p-2 sm:p-4;
+}
+
+.responsive-editor .cm-lineNumbers {
+  @apply min-w-[2rem] sm:min-w-[3rem];
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Select Styles */
+select {
+  @apply appearance-none rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-slate-100 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+/* Toast Styles */
+.Toastify__toast {
+  @apply rounded-lg bg-slate-800 text-slate-100 shadow-lg;
+}
+
+.Toastify__toast--success {
+  @apply bg-emerald-600;
+}
+
+.Toastify__toast--error {
+  @apply bg-red-600;
+}
+
+.Toastify__toast--info {
+  @apply bg-blue-600;
+}
+
+.Toastify__toast--warning {
+  @apply bg-yellow-600;
+}
+
+/* Glass Effect */
+.glass {
+  @apply bg-slate-800/50 backdrop-blur-sm;
+}
+
+.glass-border {
+  @apply border border-slate-700/50;
+}
+
+/* Loading States */
+.loading {
+  @apply relative overflow-hidden;
+}
+
+.loading::after {
+  content: '';
+  @apply absolute inset-0 bg-gradient-to-r from-transparent via-slate-700/50 to-transparent;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .cm-editor {
+    @apply max-h-[calc(93vh-60px)];
+  }
+
+  .cm-editor .cm-scroller {
+    @apply min-h-[calc(93vh-60px)];
+  }
+  
+  .btn-primary, .btn-secondary {
+    @apply w-full justify-center py-2.5;
+  }
+  
+  .input-field {
+    @apply py-2.5;
+  }
+  
+  .view-title {
+    @apply text-lg;
+  }
+  
+  /* Mobile editor adjustments */
+  .cm-editor .cm-content {
+    @apply p-2;
+  }
+  
+  .responsive-editor .cm-gutters {
+    @apply px-0;
+  }
+
+  /* Mobile editor positioning fixes */
+  .editor-container {
+    position: relative;
+    z-index: 15;
+  }
+  
+  .cm-editor {
+    position: relative;
+    z-index: 15 !important; /* Use !important to override any inline styles */
+  }
+  
+  /* When sidebar is open on mobile */
+  .editor-container.sidebar-open {
+    z-index: 25;
+  }
+
+  /* Mobile sidebar height fixes */
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .editor-container {
+    height: 100%;
+    max-height: calc(100vh - 100px);
+  }
+  
+  /* Fix editor z-index */
+  .cm-editor {
+    z-index: 15 !important;
+  }
+  
+  /* Fix sidebar height on small screens */
+  aside {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
+  
+  /* When keyboard is open on mobile */
+  @media screen and (max-height: 500px) {
+    aside > div:first-child {
+      height: 100% !important;
+      overflow-y: auto;
+    }
+    
+    aside > div:nth-child(2) {
+      height: 100% !important;
+      overflow-y: auto;
+    }
+  }
+
+  /* Fullscreen mobile sidebar for chat and other views */
+  .fullscreen-mobile {
+    width: 100% !important;
+    left: 0 !important;
+    z-index: 50 !important;
+  }
+  
+  /* Improve chat visibility */
+  .fullscreen-mobile .view-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: calc(100vh - 120px);
+  }
+  
+  /* Chat container specific styles */
+  [data-active="CHATS"] .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: calc(100vh - 110px);
+    overflow: hidden;
+  }
+  
+  [data-active="CHATS"] .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 10px;
+  }
+  
+  /* Fix chat input positioning on mobile */
+  body[data-active-view="CHATS"] .chat-input {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background-color: var(--surface-color) !important;
+    border-top: 1px solid var(--border-color) !important;
+    padding: 10px 15px !important;
+    z-index: 9999 !important; /* Extremely high z-index to ensure visibility */
+    margin: 0 !important;
+  }
+  
+  /* Ensure chat messages don't overlap with fixed input */
+  body[data-active-view="CHATS"] .chat-messages {
+    padding-bottom: 70px !important; /* Provide space for the input */
+    margin-bottom: 0 !important;
+  }
+  
+  /* Fix fullscreen sidebar overlay */
+  .fullscreen-mobile {
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+  }
+
+  /* Additional mobile-specific styles for chat input */
+  body[data-active-view="CHATS"] .chat-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 10px;
+    z-index: 9999;
+    margin: 0;
+  }
+  
+  /* Ensure messages don't get hidden behind input */
+  body[data-active-view="CHATS"] .chat-messages {
+    padding-bottom: 80px !important;
+  }
+  
+  /* Ensure the send button is visible and clickable */
+  body[data-active-view="CHATS"] .chat-input-container button {
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Fix editor height and scrolling on mobile */
+@media screen and (max-height: 600px) {
+  .cm-editor {
+    max-height: calc(100vh - 130px);
+  }
+  
+  .cm-editor .cm-scroller {
+    max-height: calc(100vh - 140px);
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .card {
+    @apply p-4;
+  }
+  
+  body {
+    font-size: 0.95rem;
+  }
+  
+  h1 {
+    @apply text-2xl;
+  }
+  
+  h2 {
+    @apply text-xl;
+  }
+  
+  .container {
+    @apply px-4;
+  }
+  
+  /* Additional editor adjustments for small screens */
+  .cm-editor {
+    @apply rounded-none border-0 border-t border-slate-700;
+  }
+  
+  .cm-editor .cm-gutters {
+    @apply border-r-0;
+  }
+  
+  .responsive-editor .cm-content {
+    @apply p-1 sm:p-2;
+  }
+  
+  .responsive-editor .cm-line {
+    @apply px-2;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .flex-col-mobile {
+    @apply flex-col;
+  }
+  
+  .hidden-mobile {
+    @apply hidden;
+  }
+  
+  .w-full-mobile {
+    @apply w-full;
+  }
+  
+  .text-center-mobile {
+    @apply text-center;
+  }
+  
+  .space-y-4-mobile {
+    @apply space-y-4;
+  }
+  
+  .px-4-mobile {
+    @apply px-4;
+  }
+  
+  .py-4-mobile {
+    @apply py-4;
+  }
+  
+  .my-4-mobile {
+    @apply my-4;
+  }
+  
+  /* Tiny screen editor adjustments */
+  .cm-editor .cm-lineNumbers {
+    display: none;
+  }
+  
+  .cm-editor .cm-foldGutter {
+    display: none;
+  }
+  
+  .cm-editor .cm-content {
+    @apply px-1 py-2;
+  }
+  
+  .responsive-editor .cm-activeLine {
+    @apply bg-slate-700/30;
+  }
+  
+  .editor-container {
+    @apply border-t border-slate-700;
+  }
+}
+
+/* Github Corner */
+
+.github-corner:hover .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+}
+
+@keyframes octocat-wave {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+    20%,
+    60% {
+        transform: rotate(-25deg);
+    }
+    40%,
+    80% {
+        transform: rotate(10deg);
+    }
+}
+
+/* Chat visibility fixes */
+body[data-active-view="CHATS"] .fullscreen-mobile {
+  display: block;
+  z-index: 90 !important;
+}
+
+body[data-active-view="CHATS"] .chat-container {
+  height: calc(100vh - 110px);
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-active-view="CHATS"] .chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+
+body[data-active-view="CHATS"] .chat-input {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 15px;
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--border-color);
+  z-index: 95;
+  width: 100%;
+}
+
+/* Fix editor height and scrolling on mobile */
+/* ... existing media queries ... */
+
+/* Update the chat input container styles */
+.chat-input-container {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
+  padding: 10px 15px;
+  z-index: 100;
+  margin-top: auto;
+}
+
+@media screen and (max-width: 768px) {
+  .chat-input-container {
+    background-color: var(--background-color) !important;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    padding: 12px !important;
+  }
+  
+  .chat-input-container form {
+    width: 100%;
+    display: flex;
+  }
+  
+  .chat-input-container input {
+    background-color: var(--surface-color) !important;
+    color: white !important;
+    border: 1px solid var(--border-color) !important;
+    font-size: 16px !important;
+    min-height: 44px !important;
+  }
+  
+  .chat-input-container button {
+    background-color: var(--primary-color) !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+/* Update the chat styles for better responsive behavior */
+
+/* Chat container and components base styles */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.chat-input-container {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--surface-color);
+  border-top: 1px solid var(--border-color);
+  padding: 10px;
+  z-index: 100;
+  margin-top: auto;
+}
+
+/* Mobile responsive chat styles */
+@media screen and (max-width: 768px) {
+  /* Fixed positioning for mobile chat input */
+  body[data-active-view="CHATS"] .chat-input-container {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important;
+    margin: 0 !important;
+  }
+
+  /* Fullscreen sidebar for chat */
+  body[data-active-view="CHATS"] .fullscreen-mobile {
+    display: block;
+    height: 100% !important;
+    max-height: 100% !important;
+    z-index: 90 !important;
+    overflow: hidden !important;
+  }
+  
+  /* Ensure chat container takes full height available */
+  body[data-active-view="CHATS"] .chat-container {
+    height: calc(100vh - 110px) !important;
+    padding-bottom: 0 !important;
+  }
+  
+  /* Give messages room to scroll without being hidden behind input */
+  body[data-active-view="CHATS"] .chat-messages {
+    padding-bottom: 60px !important;
+    max-height: none !important;
+  }
+
+  /* Make the send button easily tappable on mobile */
+  body[data-active-view="CHATS"] .chat-input-container button {
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Specific height adjustment for smaller screens */
+@media screen and (max-height: 600px) {
+  body[data-active-view="CHATS"] .chat-container {
+    height: calc(100% - 60px) !important;
+  }
+  
+  body[data-active-view="CHATS"] .chat-messages {
+    max-height: calc(100vh - 160px) !important;
+  }
+}
