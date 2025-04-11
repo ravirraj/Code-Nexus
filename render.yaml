@@ -17,14 +17,11 @@ services:
     name: code-nexus-client
     env: docker
     dockerfilePath: ./client/Dockerfile
-    dockerCommand: docker build -t code-nexus-client ./client
+    dockerCommand: docker build --build-arg VITE_BACKEND_URL=https://code-nexus-backend.onrender.com -t code-nexus-client ./client
     dockerContext: ./client
     envVars:
       - key: NODE_ENV
         value: production
       - key: VITE_BACKEND_URL
-        fromService:
-          name: code-nexus-server
-          type: web
-          property: url
+        value: https://code-nexus-backend.onrender.com
     autoDeploy: true 
