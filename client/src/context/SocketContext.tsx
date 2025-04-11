@@ -12,7 +12,6 @@ import {
     useContext,
     useEffect,
     useMemo,
-    useState,
 } from "react"
 import { toast } from "react-hot-toast"
 import { Socket, io } from "socket.io-client"
@@ -39,7 +38,6 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
         drawingData,
         setDrawingData,
     } = useAppContext()
-    const [isConnected, setIsConnected] = useState(false)
 
     console.log("Connecting to backend URL:", BACKEND_URL)
 
@@ -62,13 +60,11 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const handleConnect = () => {
             console.log("Socket connected successfully")
-            setIsConnected(true)
-            setStatus(USER_STATUS.CONNECTED)
+            setStatus(USER_STATUS.JOINED)
         }
 
         const handleDisconnect = () => {
             console.log("Socket disconnected")
-            setIsConnected(false)
             setStatus(USER_STATUS.DISCONNECTED)
         }
 
