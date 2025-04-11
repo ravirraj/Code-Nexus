@@ -1,9 +1,10 @@
 services:
   - type: web
     name: code-nexus-server
-    env: node
-    buildCommand: cd server && npm install && npm run build
-    startCommand: cd server && npm start
+    env: docker
+    dockerfilePath: ./server/Dockerfile
+    dockerCommand: docker build -t code-nexus-server ./server
+    dockerContext: ./server
     envVars:
       - key: NODE_ENV
         value: production
@@ -14,9 +15,10 @@ services:
 
   - type: web
     name: code-nexus-client
-    env: node
-    buildCommand: cd client && npm install && npm run build
-    startCommand: cd client && npx serve -s dist -l 5173
+    env: docker
+    dockerfilePath: ./client/Dockerfile
+    dockerCommand: docker build -t code-nexus-client ./client
+    dockerContext: ./client
     envVars:
       - key: NODE_ENV
         value: production
