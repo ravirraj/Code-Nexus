@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   server:
     container_name: code-nexus-server
@@ -5,6 +7,9 @@ services:
       context: ./server
       dockerfile: Dockerfile
       target: runner
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
     volumes:
       - ./server:/app
       - /build/node_modules
@@ -12,6 +17,13 @@ services:
       - code-nexus
     ports:
       - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   client:
     container_name: code-nexus-client
@@ -19,6 +31,9 @@ services:
       context: ./client
       dockerfile: Dockerfile
       target: runner
+    environment:
+      - NODE_ENV=production
+      - VITE_BACKEND_URL=http://server:3000
     volumes:
       - ./client:/app
       - /build/node_modules
@@ -27,7 +42,15 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - server
+      server:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   code-nexus:
