@@ -35,31 +35,31 @@ function ChatList() {
 
     return (
         <div
-            className="flex-grow overflow-auto rounded-md bg-darkHover p-2"
+            className="flex-grow overflow-auto rounded-md p-2"
             ref={messagesContainerRef}
             onScroll={handleScroll}
         >
             {/* Chat messages */}
             {messages.map((message, index) => {
+                const isCurrentUser = message.username === currentUser.username;
                 return (
                     <div
                         key={index}
-                        className={
-                            "mb-2 w-[80%] max-w-[90%] self-end break-words rounded-md bg-dark px-3 py-2" +
-                            (message.username === currentUser.username
-                                ? " ml-auto "
-                                : "")
-                        }
+                        className={`mb-2 w-[80%] max-w-[90%] self-end break-words rounded-md px-3 py-2 ${
+                            isCurrentUser 
+                                ? "ml-auto bg-indigo-500/10 border border-indigo-500/20" 
+                                : "bg-slate-800/50 border border-slate-700/30"
+                        }`}
                     >
                         <div className="flex justify-between">
-                            <span className="text-xs text-primary">
+                            <span className={`text-xs ${isCurrentUser ? "text-indigo-400" : "text-slate-400"}`}>
                                 {message.username}
                             </span>
-                            <span className="text-xs text-white">
+                            <span className="text-xs text-slate-400">
                                 {message.timestamp}
                             </span>
                         </div>
-                        <p className="py-1">{message.message}</p>
+                        <p className="py-1 text-slate-200">{message.message}</p>
                     </div>
                 )
             })}

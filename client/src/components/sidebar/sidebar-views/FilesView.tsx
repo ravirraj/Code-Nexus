@@ -5,16 +5,21 @@ import { TbFileUpload } from "react-icons/tb"
 import { v4 as uuidV4 } from "uuid"
 import toast from "react-hot-toast"
 import { useState } from "react"
-import { LuFile, LuFolder, LuFolderOpen, LuPlus } from "react-icons/lu"
+import { LuFolder, LuFolderOpen, LuPlus, LuX } from "react-icons/lu"
 import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import getFileIcon from "@/utils/getFileIcon"
 
 export default function FilesView() {
     const { 
         downloadFilesAndFolders, 
         updateDirectory,
         fileStructure,
-        createFile
+        createFile,
+        openFiles,
+        activeFile,
+        closeFile,
+        openFile
     } = useFileSystem()
     const [isLoading, setIsLoading] = useState(false)
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
@@ -111,6 +116,7 @@ export default function FilesView() {
     const readFileList = async (files: FileList): Promise<FileSystemItem[]> => {
         const children: FileSystemItem[] = []
         const blackList = ["node_modules", ".git", ".vscode", ".next"]
+        const directoryMap = new Map<string, FileSystemItem>()
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i]
@@ -119,38 +125,47 @@ export default function FilesView() {
             if (pathParts.some((part) => blackList.includes(part))) continue
 
             if (pathParts.length > 1) {
-                const directoryPath = pathParts.slice(0, -1).join("/")
-                const directoryIndex = children.findIndex(
-                    (item) =>
-                        item.name === directoryPath && item.type === "directory"
-                )
-
-                if (directoryIndex === -1) {
-                    const newDirectory: FileSystemItem = {
-                        id: uuidV4(),
-                        name: directoryPath,
-                        type: "directory",
-                        children: [],
-                        isOpen: false,
+                // Handle nested directories
+                let currentPath = ""
+                for (let j = 0; j < pathParts.length - 1; j++) {
+                    currentPath = currentPath ? `${currentPath}/${pathParts[j]}` : pathParts[j]
+                    
+                    if (!directoryMap.has(currentPath)) {
+                        const newDirectory: FileSystemItem = {
+                            id: uuidV4(),
+                            name: pathParts[j],
+                            type: "directory",
+                            children: [],
+                            isOpen: false,
+                        }
+                        directoryMap.set(currentPath, newDirectory)
+                        
+                        if (j === 0) {
+                            children.push(newDirectory)
+                        } else {
+                            const parentPath = currentPath.substring(0, currentPath.lastIndexOf("/"))
+                            const parentDir = directoryMap.get(parentPath)
+                            if (parentDir && parentDir.children) {
+                                parentDir.children.push(newDirectory)
+                            }
+                        }
                     }
-                    children.push(newDirectory)
                 }
 
-                const newFile: FileSystemItem = {
-                    id: uuidV4(),
-                    name: file.name,
-                    type: "file",
-                    content: await readFileContent(file),
-                }
-
-                const targetDirectory = children.find(
-                    (item) =>
-                        item.name === directoryPath && item.type === "directory"
-                )
-                if (targetDirectory && targetDirectory.children) {
-                    targetDirectory.children.push(newFile)
+                // Add file to its parent directory
+                const parentPath = pathParts.slice(0, -1).join("/")
+                const parentDir = directoryMap.get(parentPath)
+                if (parentDir && parentDir.children) {
+                    const newFile: FileSystemItem = {
+                        id: uuidV4(),
+                        name: file.name,
+                        type: "file",
+                        content: await readFileContent(file),
+                    }
+                    parentDir.children.push(newFile)
                 }
             } else {
+                // Handle root level files
                 const newFile: FileSystemItem = {
                     id: uuidV4(),
                     name: file.name,
@@ -213,11 +228,17 @@ export default function FilesView() {
     const openNewFileDialog = (folderId: string = "") => {
         setSelectedFolderId(folderId)
         setShowNewFileDialog(true)
+        setTimeout(() => {
+            const input = document.getElementById('fileName') as HTMLInputElement
+            if (input) {
+                input.focus()
+            }
+        }, 0)
     }
 
     const renderFileItem = (file: FileSystemItem) => (
         <div key={file.id} className="flex items-center gap-2 px-4 py-1 hover:bg-slate-800/50">
-            <LuFile className="h-4 w-4 text-slate-400" />
+            {getFileIcon(file.name)}
             <span className="flex-1 text-sm text-slate-300">{file.name}</span>
         </div>
     )
@@ -261,6 +282,41 @@ export default function FilesView() {
         </div>
     )
 
+    const renderOpenedFiles = () => {
+        if (!openFiles.length) return null;
+
+        return (
+            <div className="mb-4">
+                <h3 className="mb-2 px-4 text-sm font-medium text-slate-400">Opened Files</h3>
+                <div className="space-y-1">
+                    {openFiles.map((file) => (
+                        <div
+                            key={file.id}
+                            className={twMerge(
+                                "flex cursor-pointer items-center gap-2 px-4 py-1.5 hover:bg-slate-800/50",
+                                activeFile?.id === file.id && "bg-slate-800/30"
+                            )}
+                            onClick={() => openFile(file.id)}
+                        >
+                            {getFileIcon(file.name)}
+                            <span className="flex-1 text-sm text-slate-300">{file.name}</span>
+                            <button
+                                className="rounded-md p-1 text-slate-400 hover:bg-slate-700/50 hover:text-white"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    closeFile(file.id);
+                                }}
+                            >
+                                <LuX className="h-3 w-3" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+                <div className="my-2 h-px w-full bg-gradient-to-r from-transparent via-slate-700/50 to-transparent" />
+            </div>
+        );
+    };
+
     return (
         <div className="flex h-full flex-col">
             <div className="flex items-center justify-between border-b border-slate-700/50 p-4">
@@ -273,13 +329,14 @@ export default function FilesView() {
                 </button>
             </div>
             <div className="flex-1 overflow-y-auto p-2">
-                {Array.isArray(fileStructure) && fileStructure.length > 0 ? (
-                    fileStructure.map(renderFolderItem)
-                ) : (
+                {renderOpenedFiles()}
+                {fileStructure.children && fileStructure.children.length > 0 ? (
+                    fileStructure.children.map(renderFolderItem)
+                ) : openFiles.length === 0 ? (
                     <div className="flex h-full items-center justify-center p-4 text-center">
                         <p className="text-sm text-slate-400">No files loaded yet. Open a folder to get started.</p>
                     </div>
-                )}
+                ) : null}
             </div>
             <div className="flex flex-col gap-2 border-t border-slate-700/50 p-4">
                 <button

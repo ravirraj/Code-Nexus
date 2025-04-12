@@ -38,20 +38,46 @@ export const useFileSystem = (): FileContextType => {
     return context
 }
 
+const STORAGE_KEYS = {
+    FILE_STRUCTURE: 'codenexus_file_structure',
+    OPEN_FILES: 'codenexus_open_files',
+    ACTIVE_FILE: 'codenexus_active_file'
+}
+
 function FileContextProvider({ children }: { children: ReactNode }) {
     const { socket } = useSocket()
     const { setUsers, drawingData } = useAppContext()
 
-    const [fileStructure, setFileStructure] =
-        useState<FileSystemItem>(initialFileStructure)
-    const initialOpenFiles = fileStructure.children
-        ? fileStructure.children
-        : []
-    const [openFiles, setOpenFiles] =
-        useState<FileSystemItem[]>(initialOpenFiles)
-    const [activeFile, setActiveFile] = useState<FileSystemItem | null>(
-        openFiles[0],
-    )
+    // Load initial file structure from localStorage or use default
+    const [fileStructure, setFileStructure] = useState<FileSystemItem>(() => {
+        const savedStructure = localStorage.getItem(STORAGE_KEYS.FILE_STRUCTURE)
+        return savedStructure ? JSON.parse(savedStructure) : initialFileStructure
+    })
+
+    // Load initial open files from localStorage or use default
+    const [openFiles, setOpenFiles] = useState<FileSystemItem[]>(() => {
+        const savedOpenFiles = localStorage.getItem(STORAGE_KEYS.OPEN_FILES)
+        return savedOpenFiles ? JSON.parse(savedOpenFiles) : (fileStructure.children || [])
+    })
+
+    // Load initial active file from localStorage or use default
+    const [activeFile, setActiveFile] = useState<FileSystemItem | null>(() => {
+        const savedActiveFile = localStorage.getItem(STORAGE_KEYS.ACTIVE_FILE)
+        return savedActiveFile ? JSON.parse(savedActiveFile) : (openFiles[0] || null)
+    })
+
+    // Save states to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.FILE_STRUCTURE, JSON.stringify(fileStructure))
+    }, [fileStructure])
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.OPEN_FILES, JSON.stringify(openFiles))
+    }, [openFiles])
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEYS.ACTIVE_FILE, JSON.stringify(activeFile))
+    }, [activeFile])
 
     // Function to toggle the isOpen property of a directory (Directory Open/Close)
     const toggleDirectory = (dirId: Id) => {

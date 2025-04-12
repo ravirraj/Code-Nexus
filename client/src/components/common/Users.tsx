@@ -17,18 +17,31 @@ function Users() {
 }
 
 const User = ({ user }: { user: RemoteUser }) => {
-    const { username, status } = user
-    const title = `${username} - ${status === USER_CONNECTION_STATUS.ONLINE ? "online" : "offline"}`
+    const { username, status, isAdmin } = user
+    const title = `${username}${isAdmin ? ' (ADMIN)' : ''} - ${status === USER_CONNECTION_STATUS.ONLINE ? "online" : "offline"}`
 
     return (
         <div
             className="relative flex w-[100px] flex-col items-center gap-2"
             title={title}
         >
-            <Avatar name={username} size="50" round={"12px"} title={title} />
-            <p className="line-clamp-2 max-w-full text-ellipsis break-words">
-                {username}
-            </p>
+            <Avatar 
+                name={username} 
+                size="50" 
+                round={"12px"} 
+                title={title}
+                className={isAdmin ? "ring-2 ring-indigo-500" : ""}
+            />
+            <div className="flex flex-col items-center">
+                <p className="line-clamp-2 max-w-full text-ellipsis break-words text-center">
+                    {username}
+                </p>
+                {isAdmin && (
+                    <span className="mt-1 text-xs font-medium text-indigo-400 bg-indigo-400/10 px-2 py-0.5 rounded-full">
+                        ADMIN
+                    </span>
+                )}
+            </div>
             <div
                 className={`absolute right-5 top-0 h-3 w-3 rounded-full ${
                     status === USER_CONNECTION_STATUS.ONLINE

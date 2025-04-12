@@ -1,6 +1,4 @@
 import { useFileSystem } from "@/context/FileContext"
-import { getIconClassName } from "@/utils/getIconClassName"
-import { Icon } from "@iconify/react"
 import { IoClose } from "react-icons/io5"
 import cn from "classnames"
 import { useEffect, useRef } from "react"
@@ -8,6 +6,7 @@ import customMapping from "@/utils/customMapping"
 import { useSettings } from "@/context/SettingContext"
 import langMap from "lang-map"
 import useWindowDimensions from "@/hooks/useWindowDimensions"
+import getFileIcon from "@/utils/getFileIcon"
 
 function FileTab() {
     const {
@@ -107,11 +106,9 @@ function FileTab() {
                     )}
                     onClick={() => changeActiveFile(file.id)}
                 >
-                    <Icon
-                        icon={getIconClassName(file.name)}
-                        fontSize={isMobile ? 18 : 22}
-                        className="mr-1 sm:mr-2 min-w-fit"
-                    />
+                    <span className="mr-1 sm:mr-2 min-w-fit">
+                        {getFileIcon(file.name)}
+                    </span>
                     <p
                         className="flex-grow cursor-pointer overflow-hidden truncate"
                         title={file.name}
