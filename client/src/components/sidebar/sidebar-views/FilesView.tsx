@@ -5,7 +5,7 @@ import { TbFileUpload } from "react-icons/tb"
 import { v4 as uuidV4 } from "uuid"
 import toast from "react-hot-toast"
 import { useState } from "react"
-import { LuFile, LuFolder, LuFolderOpen } from "react-icons/lu"
+import { LuFile, LuFolder, LuFolderOpen, LuPlus } from "react-icons/lu"
 import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -13,10 +13,14 @@ export default function FilesView() {
     const { 
         downloadFilesAndFolders, 
         updateDirectory,
-        fileStructure
+        fileStructure,
+        createFile
     } = useFileSystem()
     const [isLoading, setIsLoading] = useState(false)
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
+    const [showNewFileDialog, setShowNewFileDialog] = useState(false)
+    const [newFileName, setNewFileName] = useState("")
+    const [selectedFolderId, setSelectedFolderId] = useState<string>("")
 
     const handleOpenDirectory = async () => {
         try {
@@ -188,6 +192,29 @@ export default function FilesView() {
         })
     }
 
+    const handleCreateNewFile = () => {
+        if (!newFileName.trim()) {
+            toast.error("Please enter a file name")
+            return
+        }
+
+        // Create the file in the selected folder or root
+        const parentId = selectedFolderId || fileStructure.id
+        createFile(parentId, newFileName)
+        
+        // Reset state
+        setNewFileName("")
+        setShowNewFileDialog(false)
+        setSelectedFolderId("")
+        
+        toast.success(`File ${newFileName} created successfully`)
+    }
+
+    const openNewFileDialog = (folderId: string = "") => {
+        setSelectedFolderId(folderId)
+        setShowNewFileDialog(true)
+    }
+
     const renderFileItem = (file: FileSystemItem) => (
         <div key={file.id} className="flex items-center gap-2 px-4 py-1 hover:bg-slate-800/50">
             <LuFile className="h-4 w-4 text-slate-400" />
@@ -212,6 +239,15 @@ export default function FilesView() {
                     <LuFolder className="h-4 w-4 text-slate-400" />
                 )}
                 <span className="flex-1 text-sm text-slate-300">{folder.name}</span>
+                <button 
+                    className="ml-auto rounded-md p-1 text-slate-400 hover:bg-slate-700/50 hover:text-white"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        openNewFileDialog(folder.id);
+                    }}
+                >
+                    <LuPlus className="h-3 w-3" />
+                </button>
             </div>
             {expandedFolders.has(folder.id) && folder.children && (
                 <div className="ml-4">
@@ -229,6 +265,12 @@ export default function FilesView() {
         <div className="flex h-full flex-col">
             <div className="flex items-center justify-between border-b border-slate-700/50 p-4">
                 <h2 className="text-lg font-semibold text-white">Files</h2>
+                <button 
+                    className="rounded-md p-1 text-slate-400 hover:bg-slate-700/50 hover:text-white"
+                    onClick={() => openNewFileDialog()}
+                >
+                    <LuPlus className="h-5 w-5" />
+                </button>
             </div>
             <div className="flex-1 overflow-y-auto p-2">
                 {Array.isArray(fileStructure) && fileStructure.length > 0 ? (
@@ -253,9 +295,45 @@ export default function FilesView() {
                     onClick={downloadFilesAndFolders}
                 >
                     <BiArchiveIn className="mr-2 h-5 w-5" />
-                    Download Code
+                    Download Files
                 </button>
             </div>
+
+            {/* New File Dialog */}
+            {showNewFileDialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+                    <div className="w-full max-w-md rounded-lg bg-slate-800 p-6 shadow-lg">
+                        <h3 className="mb-4 text-lg font-medium text-white">Create New File</h3>
+                        <div className="mb-4">
+                            <label htmlFor="fileName" className="mb-2 block text-sm font-medium text-slate-300">
+                                File Name
+                            </label>
+                            <input
+                                type="text"
+                                id="fileName"
+                                className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none"
+                                placeholder="index.cpp"
+                                value={newFileName}
+                                onChange={(e) => setNewFileName(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                className="rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600"
+                                onClick={() => setShowNewFileDialog(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="rounded-md bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-600"
+                                onClick={handleCreateNewFile}
+                            >
+                                Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
