@@ -90,13 +90,6 @@ A powerful real-time collaborative coding environment that enables seamless code
 - Extension marketplace
 - Performance optimizations
 
-## 🤝 Contributing
-
-We welcome contributions! Please read our [contribution guidelines](CONTRIBUTING.md) before submitting pull requests.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
