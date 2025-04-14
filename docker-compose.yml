@@ -2,16 +2,20 @@ version: '3.8'
 
 services:
   server:
-    container_name: code-nexus-server
+    container_name: code-with-us-server
     build:
       context: ./server
       dockerfile: Dockerfile
       target: runner
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3000
+      - CORS_ORIGIN=http://localhost:5173
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     networks:
-      - code-nexus
+      - code-with-us
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -23,16 +27,20 @@ services:
       start_period: 40s
 
   client:
-    container_name: code-nexus-client
+    container_name: code-with-us-client
     build:
       context: ./client
       dockerfile: Dockerfile
       target: runner
+      args:
+        - VITE_BACKEND_URL=http://localhost:3000
     environment:
-      - NODE_ENV=production
-      - VITE_BACKEND_URL=http://server:3000
+      - NODE_ENV=development
+    volumes:
+      - ./client:/app
+      - /app/node_modules
     networks:
-      - code-nexus
+      - code-with-us
     ports:
       - "5173:5173"
     depends_on:
@@ -47,5 +55,5 @@ services:
       start_period: 40s
 
 networks:
-  code-nexus:
+  code-with-us:
     driver: bridge

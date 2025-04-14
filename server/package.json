@@ -1,5 +1,5 @@
 {
-	"name": "code-nexus-server",
+	"name": "code-with-us-server",
 	"version": "1.0.0",
 	"description": "",
 	"main": "dist/server.js",

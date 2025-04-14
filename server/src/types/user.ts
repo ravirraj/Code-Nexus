@@ -11,6 +11,7 @@ interface User {
 	typing: boolean
 	currentFile: string | null
 	socketId: string
+	isAdmin: boolean
 }
 
 export { USER_CONNECTION_STATUS, User }

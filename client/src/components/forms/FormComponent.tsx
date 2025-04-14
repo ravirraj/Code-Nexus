@@ -95,7 +95,7 @@ const FormComponent = () => {
                 <div className="mx-auto mb-3 sm:mb-4 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-indigo-500/10">
                     <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-400" />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white">Join CodeNexus</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Join CodeWithUs</h2>
                 <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-slate-400">
                     Enter your details to start coding together
                 </p>

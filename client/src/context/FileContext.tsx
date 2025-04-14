@@ -39,9 +39,9 @@ export const useFileSystem = (): FileContextType => {
 }
 
 const STORAGE_KEYS = {
-    FILE_STRUCTURE: 'codenexus_file_structure',
-    OPEN_FILES: 'codenexus_open_files',
-    ACTIVE_FILE: 'codenexus_active_file'
+    FILE_STRUCTURE: 'codewithus_file_structure',
+    OPEN_FILES: 'codewithus_open_files',
+    ACTIVE_FILE: 'codewithus_active_file'
 }
 
 function FileContextProvider({ children }: { children: ReactNode }) {

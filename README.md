@@ -28,7 +28,7 @@ A powerful real-time collaborative coding environment that enables seamless code
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ravirraj/code-nexus.git
+   git clone https://github.com/ravirraj/code-with-us.git
    ```
 
 2. **Environment Setup**

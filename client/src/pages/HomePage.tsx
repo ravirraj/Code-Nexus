@@ -1,5 +1,5 @@
 import FormComponent from "@/components/forms/FormComponent"
-import { Code2, Users, Zap, Share2, Sparkles, ArrowRight } from "lucide-react"
+import { Code2, Users, Zap, Share2, Sparkles } from "lucide-react"
 // import Footer from "@/components/common/Footer";
 
 function HomePage() {
@@ -26,7 +26,7 @@ function HomePage() {
                                 </span>
                             </h1>
                             <p className="mb-6 sm:mb-8 text-base sm:text-lg text-slate-300">
-                                Experience the future of collaborative coding with CodeNexus.
+                                Experience the future of collaborative coding with CodeWithUs.
                                 Connect, create, and code together in perfect harmony.
                             </p>
                         </div>
@@ -43,7 +43,7 @@ function HomePage() {
             <div className="container mx-auto px-4 py-8 sm:py-16">
                 <div className="mb-8 sm:mb-12 text-center">
                     <h2 className="mb-2 sm:mb-4 text-2xl sm:text-3xl font-bold text-white">
-                        Why Choose CodeNexus?
+                        Why Choose CodeWithUs?
                     </h2>
                     <p className="text-sm sm:text-base text-slate-400">
                         Your central hub for seamless collaborative development
@@ -78,17 +78,13 @@ function HomePage() {
                 <div className="container mx-auto px-4 py-8 sm:py-16">
                     <div className="flex flex-col items-center justify-center text-center">
                         <h2 className="mb-2 sm:mb-4 text-2xl sm:text-3xl font-bold text-white">
-                            Ready to Join the CodeNexus?
+                            Ready to Join the CodeWithUs?
                         </h2>
                         <p className="mb-6 sm:mb-8 text-base sm:text-lg text-slate-300">
                             Join thousands of developers who are already building the future together.
                         </p>
-                        <div className="flex w-full max-w-md flex-col items-center gap-4 sm:flex-row">
+                        <div className="w-full max-w-md">
                             <FormComponent />
-                            <button className="btn-secondary group w-full sm:w-auto">
-                                Learn More
-                                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                            </button>
                         </div>
                     </div>
                 </div>

@@ -61,7 +61,7 @@ function EditorPage() {
             <nav className="fixed left-0 right-0 top-0 z-[60] flex h-[60px] items-center justify-between border-b border-slate-800 bg-slate-800/50 px-3 sm:px-4 backdrop-blur-sm">
                 <div className="flex items-center space-x-2 sm:space-x-4">
                     <Code2 className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400" />
-                    <span className="text-base sm:text-lg font-semibold text-white">CodeNexus</span>
+                    <span className="text-base sm:text-lg font-semibold text-white">CodeWithUs</span>
                 </div>
                 
                 {/* Mobile Menu Button */}

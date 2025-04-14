@@ -1,29 +1,30 @@
 services:
   - type: web
-    name: code-nexus-server
-    env: docker
+    name: code-with-us-server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
     dockerfilePath: ./server/Dockerfile
-    dockerCommand: docker build -t code-nexus-server ./server
     dockerContext: ./server
+    dockerCommand: docker build -t code-with-us-server ./server
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 3000
       - key: CORS_ORIGIN
-        value: https://code-nexus-client.onrender.com
+        value: https://code-with-us-client.onrender.com
+      - key: PORT
+        value: 10000
     healthCheckPath: /health
     autoDeploy: true
 
   - type: web
-    name: code-nexus-client
-    env: docker
+    name: code-with-us-client
+    env: node
+    buildCommand: npm install
+    startCommand: npm run preview
     dockerfilePath: ./client/Dockerfile
-    dockerCommand: docker build --build-arg VITE_BACKEND_URL=https://code-nexus-backend.onrender.com -t code-nexus-client ./client
     dockerContext: ./client
+    dockerCommand: docker build --build-arg VITE_BACKEND_URL=https://code-with-us-backend.onrender.com -t code-with-us-client ./client
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: VITE_BACKEND_URL
-        value: https://code-nexus-backend.onrender.com
+        value: https://code-with-us-backend.onrender.com
+    healthCheckPath: /
     autoDeploy: true 

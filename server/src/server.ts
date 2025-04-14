@@ -15,7 +15,7 @@ app.use(express.json())
 
 // Configure CORS
 app.use(cors({
-	origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
+	origin: ["https://code-with-us-client.onrender.com", "http://localhost:5173"],
 	methods: ["GET", "POST", "OPTIONS"],
 	credentials: true,
 	allowedHeaders: ["Content-Type", "Authorization"]
@@ -33,7 +33,7 @@ const server = http.createServer(app)
 // Socket.IO configuration
 const io = new Server(server, {
 	cors: {
-		origin: ["https://code-nexus-client.onrender.com", "http://localhost:5173"],
+		origin: ["https://code-with-us-client.onrender.com", "http://localhost:5173"],
 		methods: ["GET", "POST", "OPTIONS"],
 		credentials: true,
 		allowedHeaders: ["Content-Type", "Authorization"]
@@ -50,6 +50,7 @@ const io = new Server(server, {
 })
 
 let userSocketMap: User[] = []
+let roomCreatorMap: { [key: string]: string } = {} // Maps roomId to creator's socketId
 
 // Function to get all users in a room
 function getUsersInRoom(roomId: string): User[] {
@@ -91,6 +92,12 @@ io.on("connection", (socket) => {
 			return
 		}
 
+		// Check if this is the first user in the room
+		const isFirstUser = !roomCreatorMap[roomId]
+		if (isFirstUser) {
+			roomCreatorMap[roomId] = socket.id
+		}
+
 		const user = {
 			username,
 			roomId,
@@ -99,11 +106,19 @@ io.on("connection", (socket) => {
 			typing: false,
 			socketId: socket.id,
 			currentFile: null,
+			isAdmin: isFirstUser
 		}
+
 		userSocketMap.push(user)
 		socket.join(roomId)
-		socket.broadcast.to(roomId).emit(SocketEvent.USER_JOINED, { user })
+		
+		// Get all users in the room including the new user
 		const users = getUsersInRoom(roomId)
+		
+		// Send the new user's info to all other users
+		socket.broadcast.to(roomId).emit(SocketEvent.USER_JOINED, { user })
+		
+		// Send the complete user list to the new user
 		io.to(socket.id).emit(SocketEvent.JOIN_ACCEPTED, { user, users })
 	})
 
