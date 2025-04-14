@@ -9,6 +9,8 @@ import {
 } from "react"
 import { useSocket } from "./SocketContext"
 
+const STORAGE_KEY = 'codewithus_chat_messages'
+
 const ChatContext = createContext<ChatContextType | null>(null)
 
 export const useChatRoom = (): ChatContextType => {
@@ -21,9 +23,17 @@ export const useChatRoom = (): ChatContextType => {
 
 function ChatContextProvider({ children }: { children: ReactNode }) {
     const { socket } = useSocket()
-    const [messages, setMessages] = useState<ChatMessage[]>([])
+    const [messages, setMessages] = useState<ChatMessage[]>(() => {
+        const savedMessages = localStorage.getItem(STORAGE_KEY)
+        return savedMessages ? JSON.parse(savedMessages) : []
+    })
     const [isNewMessage, setIsNewMessage] = useState<boolean>(false)
     const [lastScrollHeight, setLastScrollHeight] = useState<number>(0)
+
+    // Save messages to local storage whenever they change
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages))
+    }, [messages])
 
     useEffect(() => {
         socket.on(
@@ -38,6 +48,11 @@ function ChatContextProvider({ children }: { children: ReactNode }) {
         }
     }, [socket])
 
+    const clearChat = () => {
+        setMessages([])
+        localStorage.removeItem(STORAGE_KEY)
+    }
+
     return (
         <ChatContext.Provider
             value={{
@@ -47,6 +62,7 @@ function ChatContextProvider({ children }: { children: ReactNode }) {
                 setIsNewMessage,
                 lastScrollHeight,
                 setLastScrollHeight,
+                clearChat,
             }}
         >
             {children}

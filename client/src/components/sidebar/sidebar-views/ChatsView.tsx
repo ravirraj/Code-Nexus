@@ -1,9 +1,13 @@
 import useWindowDimensions from "@/hooks/useWindowDimensions"
 import ChatInput from "@/components/chats/ChatInput"
 import ChatList from "@/components/chats/ChatList"
+import { useChatRoom } from "@/context/ChatContext"
+import { Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const ChatsView = () => {
     const { isMobile } = useWindowDimensions()
+    const { clearChat } = useChatRoom()
 
     // Set responsive input height
     const inputHeight = isMobile ? 100 : 40; // Smaller height for mobile
@@ -17,7 +21,18 @@ const ChatsView = () => {
                 paddingBottom: `${inputHeight}px` // Add padding for the input
             }}
         >
-            <h1 className="view-title mb-2">Group Chat</h1>
+            <div className="flex items-center justify-between">
+                <h1 className="view-title mb-2">Group Chat</h1>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-slate-400 hover:text-red-400"
+                    onClick={clearChat}
+                    title="Clear chat history"
+                >
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+            </div>
             {/* Chat list */}
             <div 
                 className="flex-grow overflow-y-auto pr-2 chat-messages"

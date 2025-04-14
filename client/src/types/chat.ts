@@ -14,6 +14,7 @@ interface ChatContext {
     setIsNewMessage: (isNewMessage: boolean) => void
     lastScrollHeight: number
     setLastScrollHeight: (lastScrollHeight: number) => void
+    clearChat: () => void
 }
 
 export { ChatContext, ChatMessage }
